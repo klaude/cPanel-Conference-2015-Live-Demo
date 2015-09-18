@@ -10,8 +10,8 @@
  * product object's type property to find which related products to load.
  *
  * Load each recommended product as children for a new menu item. This menu item
- * is displayed as a panel on the sidebar. Use the ClientAreaPrimarySidebar hook
- * point to load the new panel into the sidebar.
+ * is displayed as a panel on the sidebar. Use the ClientAreaSecondarySidebar
+ * hook point to load the new panel into the sidebar.
  *
  * Note: This was a demo written live during a talk Nate Custer and I gave at
  * cPanel Conference 2015 about WHMCS module customization. A segment of the
@@ -29,7 +29,7 @@
  * @license MIT <http://opensource.org/licenses/MIT>
  * @see http://docs.whmcs.com/classes/classes/WHMCS.Product.Product.html
  * @see http://docs.whmcs.com/Hooks:PreCalculateCartTotals
- * @see http://docs.whmcs.com/Hooks:ClientAreaPrimarySidebar
+ * @see http://docs.whmcs.com/Hooks:ClientAreaSecondarySidebar
  * @see http://docs.whmcs.com/Editing_Client_Area_Menus
  * @see https://github.com/n8whnp/cPconf-2015
  */
@@ -79,6 +79,12 @@ add_hook(
     1,
     function (array $parameters) use ($recommendedProducts, &$recommendedProductsPanel)
     {
+        // Don't build a panel if there's nothing in the cart (because there's
+        // nothing to recommend!)
+        if (count($parameters['products']) == 0) {
+            return;
+        }
+
         $recommendedProductsPanel = new MenuItem('Related Products', new MenuFactory);
 
         // Look through the products in the cart and instantiate a new Product
@@ -94,11 +100,11 @@ add_hook(
     }
 );
 
-// Assign the new panel to the primary sidebar.
+// Assign the new panel to the secondary sidebar.
 add_hook(
-    'ClientAreaPrimarySidebar',
+    'ClientAreaSecondarySidebar',
     1,
-    function (MenuItem $primarySidebar) use (&$recommendedProductsPanel)
+    function (MenuItem $secondarySidebar) use (&$recommendedProductsPanel)
     {
         // $myPanel is only defined on the cart checkout page, so if it's null
         // then the user is on another page and we shouldn't edit the sidebar.
@@ -106,6 +112,6 @@ add_hook(
             return;
         }
 
-        $primarySidebar->addChild($recommendedProductsPanel);
+        $secondarySidebar->addChild($recommendedProductsPanel);
     }
 );
