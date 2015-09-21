@@ -106,8 +106,9 @@ add_hook(
     1,
     function (MenuItem $secondarySidebar) use (&$recommendedProductsPanel)
     {
-        // $myPanel is only defined on the cart checkout page, so if it's null
-        // then the user is on another page and we shouldn't edit the sidebar.
+        // $recommendedProductsPanel is only defined on the cart checkout page,
+        // so if it's null then the user is on another page and we shouldn't
+        // edit the sidebar.
         if (is_null($recommendedProductsPanel)) {
             return;
         }
